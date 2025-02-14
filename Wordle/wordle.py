@@ -4,7 +4,14 @@ from wordle_secret_words import get_secret_words
 from valid_wordle_guesses import get_valid_wordle_guesses
 import random
 
+
 def colored_print(feedback):
+    '''Prints all guesses formatted to show how correct each letter is based on Wordle schema. 
+        
+        Args:
+         feedback (list): A list of feedback strings, which could be empty
+        
+    '''
     for word in feedback:
         for char in word:
             if char == '-':
@@ -14,8 +21,6 @@ def colored_print(feedback):
             else:
                 print(Back.GREEN + Fore.WHITE + char.upper(), end = "")
         print("\n")
-            
-
 
 def get_feedback(guess: str, secret_word: str) -> str:
     '''Generates a feedback string based on comparing a 5-letter guess with the secret word. 
@@ -62,7 +67,7 @@ def get_feedback(guess: str, secret_word: str) -> str:
 
     return "".join(answer)
 
-def get_AI_guess(guesses: list[str], feedback: list[str], secret_words: set[str], valid_guesses: set[str]) -> str:
+def get_AI_guess(guesses: list[str], feedback: list[str], valid_guesses: set[str]) -> str:
     '''Analyzes feedback from previous guesses/feedback (if any) to make a new guess
         
         Args:
@@ -74,31 +79,36 @@ def get_AI_guess(guesses: list[str], feedback: list[str], secret_words: set[str]
         Returns:
          str: a valid guess that is exactly 5 uppercase letters
     '''
-    ai = AI(secret_words, valid_guesses)
+    ai = AI(valid_guesses)
     for index, guess in enumerate(guesses):
-        ai.possible_secret_words = ai.narrow_down(feedback[index], guess)
+        ai.possible_guesses = ai.narrow_down(feedback[index], guess)
 
     return ai.get_next_guess(len(guesses) + 1)
 
 class AI:
-    def __init__(self, secret_word_list, valid_guesses):
+    def __init__(self, valid_guesses):
         self.possible_guesses = valid_guesses
-        self.possible_secret_words = secret_word_list
     
     def get_next_guess(self, guess_number):
+        '''Predicts the next most optimal guess according to available guesses    
+        
+            Args:
+            guess_number (int): The current guess attempt number
+            
+            Returns:
+            str: a valid guess that is exactly 5 uppercase letters
+        '''
         min_guess = 5000
         best_guess = ""
 
         if guess_number == 1:
             return "ARISE"
-        if guess_number == 2:
-            return "CLOUT"
 
-        for guess in self.possible_secret_words:
+        for guess in self.possible_guesses:
             guess_dict = {}
             
-            for secret_word in self.possible_secret_words:
-                result = get_feedback(guess, secret_word)
+            for word in self.possible_guesses:
+                result = get_feedback(guess, word)
                 guess_dict[result] = guess_dict.get(result, 0) + 1
 
             max_guess = max(guess_dict.values())
@@ -108,24 +118,32 @@ class AI:
 
         return best_guess
 
-# Narrow down possible_secret_words and possible_guesses
     def narrow_down(self, result, guess):
+        '''Narrows down the number of possible guesses remaining from given guess and result
+            
+            Args:
+            guesses (str): A given guess
+            result (str): A result from the given guess
+            
+            Returns:
+            set: a set of remaining possible guesses
+        '''
         possible = set()
-        for string in self.possible_secret_words:
-            if get_feedback(guess, secret_word) == result:
-                possible.add(secret_word)
+        for word in self.possible_guesses:
+            if get_feedback(guess, word) == result:
+                possible.add(word)
         return possible
 
 # Plays the game
 if __name__ == "__main__":
-    secret_word = random.choice(list(get_valid_wordle_guesses()))
+    secret_word = random.choice(list(get_secret_words()))
     guesses = []
     feedback = []
     turns = 0
     ai = (input("Do you want AI suggestions? (Y)\n")).upper()
     while True:
         if ai == "Y":
-            suggestion = get_AI_guess(guesses, feedback, get_secret_words(), get_valid_wordle_guesses())
+            suggestion = get_AI_guess(guesses, feedback, get_valid_wordle_guesses())
             print("AI guess is: " + suggestion)
         guess = input("Input your guess:\n")
         guesses.append(guess)

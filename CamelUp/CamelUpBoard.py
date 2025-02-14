@@ -1,10 +1,7 @@
-# To install colorama, run the following command in your VS Code terminal:
-# python3 -m pip install colorama
 from colorama import Fore, Back, Style, init
 from itertools import permutations, product
 from CamelUpPlayer import CamelUpPlayer
 import random
-import math
 import copy 
 
 

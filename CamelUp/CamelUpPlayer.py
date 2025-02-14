@@ -1,5 +1,3 @@
-# To install colorama, run the following command in your VS Code terminal:
-# python3 -m pip install colorama
 from colorama import Fore, Back, Style, init
 
 class CamelUpPlayer:
