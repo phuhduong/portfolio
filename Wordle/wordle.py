@@ -134,7 +134,7 @@ class AI:
                 possible.add(word)
         return possible
 
-# Plays the game
+# Plays Wordle with the option of AI assistance
 if __name__ == "__main__":
     secret_word = random.choice(list(get_secret_words()))
     guesses = []

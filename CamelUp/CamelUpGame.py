@@ -15,10 +15,10 @@ class CamelUpGame:
         self.players = CamelUpPlayer(p1_name), CamelUpPlayer(p2_name)
     
     def get_player_move(self, player: CamelUpPlayer)->str:
-        """Prompts the use to enter a valid menu choice:
+        '''Prompts the use to enter a valid menu choice:
             - B or b to place a bet
             - R or r to shake the pyramd
-        """ 
+        ''' 
         print(f"{player.name}-", end = " ")     
         choice = "not_an_option"
         while choice.lower() not in ["b", "r"]:
